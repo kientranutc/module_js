@@ -8,7 +8,7 @@
         <div class="row">
             <div class="col-md-12">
                 <div class="btn-action">
-                    <button class="btn btn-sm  btn-success" type="button" id="addrow"><span class="glyphicon glyphicon-plus"></span> Add</button>
+                    <button class="btn btn-md  btn-success" type="button" style="margin-bottom: 10px" id="addrow"><span class="glyphicon glyphicon-plus"></span> Add</button>
                 </div>
             </div>
         </div>
@@ -52,10 +52,11 @@
 
 <script>
     $(document).ready(function () {
-        var counter = 0;
+        var counter = 1;
 
         $("#addrow").on("click", function () {
-            var newRow = $("<tr>");
+            if (counter <= 10){
+                var newRow = $("<tr>");
             var cols = "";
 
             cols += '<td><input type="text" class="form-control" required name="name' + counter + '"/></td>';
@@ -65,6 +66,9 @@
             cols += '<td> <a type="button" class="ibtnDel btn btn-md btn-danger "><span class="glyphicon glyphicon-trash"></span>  Delete</a></td>';
             newRow.append(cols);
             $("table.order-list").append(newRow);
+            } else {
+                alert("Vượt quá giới hạn 10 hàng !");
+            }
             counter++;
         });
 
