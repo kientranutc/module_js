@@ -1,0 +1,208 @@
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+<script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
+<!------ Include the above in your HEAD tag ---------->
+
+<div class="container">
+    <form action="" method="post" id="form-ab">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="btn-action">
+                    <button class="btn btn-md  btn-success" type="button" style="margin-bottom: 10px" id="addrow"><span class="glyphicon glyphicon-plus"></span> Add</button>
+                </div>
+            </div>
+        </div>
+        <table id="myTable" class=" table table-bordered order-list">
+            <thead>
+            <tr>
+                <td>Name</td>
+                <td>Unknown</td>
+                <td>Type</td>
+                <td>Gmail</td>
+                <td>Money</td>
+                <td>Action</td>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td >
+                    <input type="text"  name="name" data-id="1" required class="form-control input-name" />
+                </td>
+                <td>
+                    <p id="image_1">Unknown</p>
+                    <input type="hidden" id="image_hidden_1" name="image_hidden[]">
+                </td>
+                <td >
+                    <select name="" id="" required class="form-control">
+                        <option value="">--Chọn--</option>
+                        <option value="">A</option>
+                        <option value="">B</option>
+                    </select>
+                </td>
+                <td >
+                    <input type="mail" name="mail" required  class="form-control"/>
+                </td>
+                <td >
+                    <input type="number" name="money" required class="form-control input-money"/>
+                </td>
+                <td ><a class="deleteRow"></a>
+
+                </td>
+            </tr>
+            </tbody>
+            <tfoot>
+            <tr>
+                <td colspan="5" style="text-align: left;">
+                    <button type="submit" class="btn btn-primary " id="add-card" >Submit</button>
+                </td>
+                <td id="grandtotal"></td>
+            </tr>
+            <tr>
+            </tr>
+            </tfoot>
+        </table>
+    </form>
+</div>
+
+<script>
+    $(document).ready(function () {
+        var counter = 2;
+
+        $("#addrow").on("click", function () {
+            if (counter <= 10){
+                var newRow = $("<tr>");
+                var cols = "";
+
+                cols += '<td><input type="text" class="form-control input-name" data-id="'+counter+'" required name="name' + counter + '"/></td>';
+                cols+='<td ><p id="image_'+counter+'">Unknown</p><input type="hidden" id="image_hidden_'+counter+'" name=""></td>'
+                cols+='<td> <select name="" id="" required class="form-control">\n' +
+                    '                        <option value="">--Chọn--</option>\n' +
+                    '                        <option value="">A</option>\n' +
+                    '                        <option value="">B</option>\n' +
+                    '                    </select></td>'
+                cols += '<td><input type="text" class="form-control" required name="mail' + counter + '"/></td>';
+                cols += '<td><input type="number" class="form-control input-money" required name="money' + counter + '"/></td>';
+
+                cols += '<td> <a type="button" class="ibtnDel btn btn-md btn-danger "><span class="glyphicon glyphicon-trash"></span></a></td>';
+                newRow.append(cols);
+                $("table.order-list").append(newRow);
+            } else {
+                alert("Vượt quá giới hạn 10 hàng !");
+            }
+            counter++;
+        });
+
+        $("table.order-list").on("click", ".ibtnDel", function (event) {
+            $(this).closest("tr").remove();
+            counter -= 1
+        });
+
+        // event input name
+
+        $(document).on("keydown",".input-name",function(){
+            var data = $(this).val();
+            var result = map(data);
+            var id = $(this).data("id");
+            $("#image_"+id).html(result['val']);
+            $("#image_hidden_"+id).val(result['key']);
+        });
+        $(document).on("keyup",".input-name",function(){
+            var data = $(this).val();
+            var result = map(data);
+            var id = $(this).data("id");
+            $("#image_"+id).html(result['val']);
+            $("#image_hidden_"+id).val(result['key']);
+        });
+        //event input money
+        $(document).on("keydown",".input-money",function(){
+            calculateGrandTotal();
+        });
+        $(document).on("keyup",".input-money",function(){
+            calculateGrandTotal();
+        });
+
+        //event submit form
+
+        var frm = $('#form-ab');
+        frm.submit(function (e) {
+            e.preventDefault();
+            $.ajax({
+                type: frm.attr('method'),
+                url: frm.attr('action'),
+                data: frm.serialize(),
+                success: function (data) {
+                    console.log('Submission was successful.');
+                    console.log(data);
+                },
+                error: function (data) {
+                    console.log('An error occurred.');
+                    console.log(data);
+                },
+            });
+        });
+
+    });
+
+    function calculateRow(row) {
+        var price = +row.find('input[name^="price"]').val();
+
+    }
+
+    function calculateGrandTotal() {
+        var grandTotal = 0;
+        $('input[name^="money"]').each(function () {
+            grandTotal +=parseInt($(this).val());
+        });
+        $("#grandtotal").text(parseInt(grandTotal));
+    }
+
+    function map(val) {
+        var arr1 = ["12", "13", "14"];
+        var arr2 = ["22", "23", "24"];
+        var arr3 = ["32", "33", "34"];
+        var strLength = val.length;
+        var result=[];
+        result["key"] = "";
+        result["val"] = "Unknown";
+        if (strLength==10 ) {
+            var str = val.substr(0, 2);
+            if (inArray(str, arr1)==true) {
+                result["key"] = "A1";
+                result["val"] = "A1";
+            }
+            if (inArray(str, arr2)) {
+                result["key"] = "A2";
+                result["val"] = "A2";
+            }
+            if (inArray(str, arr3)) {
+                result["key"] = "A3";
+                result["val"] = "A3";
+            }
+
+        }
+        return result;
+    }
+
+    function inArray(needle, haystack) {
+        var length = haystack.length;
+        for(var i = 0; i < length; i++) {
+            if(haystack[i] == needle) return true;
+        }
+        return false;
+    }
+
+    function  validate() {
+        var result = []
+        $('input[name^="image_hidden"]').each(function (index) {
+            if($(this).val()=='') {
+                result["key"] = false;
+                result['']
+                return;
+            }
+        });
+
+        return result;
+    }
+
+
+</script>
